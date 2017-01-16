@@ -10,6 +10,8 @@ data Tree = Node Int Tree Tree   -- ^ Internal nodes
           | Leaf Int             -- ^ Leaf nodes
   deriving (Eq,Show)
 
+-- | Resulting structure for node dec:
+-- (Node [child node] [left node] [right node])
 
 -- | An example binary tree, which will be used in tests.
 t1 :: Tree
@@ -56,8 +58,9 @@ leftmost (Node _ l _) = leftmost l
 --   >>> rightmost t2
 --   9
 --
-rightmost = undefined
-
+rightmost :: Tree -> Int
+rightmost (Leaf i) = i
+rightmost (Node _ _ r) = rightmost r
 
 -- | Get the maximum integer from a binary tree.
 --
