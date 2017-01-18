@@ -1,3 +1,7 @@
+-- Evan Steele
+-- Will Olsen
+-- Stefan Reindels
+
 module Nat where
 
 import Prelude hiding (Enum(..), sum)
@@ -56,7 +60,7 @@ pred (Succ n) = n
 isZero :: Nat -> Bool
 isZero Zero = True
 -- pattern match test if input Nat is the Nat Zero
-isZero (Succ n) = False
+isZero _ = False
 -- pattern match test if input Nat is of form Nat -> Nat
 -- helpful because Succ is type Nat -> Nat
 
@@ -95,7 +99,7 @@ toInt (Succ n) = 1 + toInt n
 --   
 add :: Nat -> Nat -> Nat
 -- takes in two Nat and returns a Nat
-add x Zero = x
+add x Zero = x 
 add x y = add (Succ x) (pred y)
 
 
@@ -116,9 +120,7 @@ add x y = add (Succ x) (pred y)
 --
 sub :: Nat -> Nat -> Nat
 sub x Zero = x
-sub x y
- | gt x y == True = sub (pred x) (pred y)
- | otherwise = Zero
+sub x y = sub (pred x) (pred y)
 
 
 -- | Is the left value greater than the right?
@@ -167,8 +169,9 @@ mult x y = add x (mult x (pred y))
 --   >>> toInt (sum [one,two,three])
 --   6
 --
-sum = undefined
-
+sum :: [Nat] -> Nat
+sum [] = Zero 
+sum h = add (head h) (sum (tail h)) 
 
 -- | An infinite list of all of the *odd* natural numbers, in order.
 --
@@ -178,6 +181,7 @@ sum = undefined
 --   >>> toInt (sum (take 100 odds))
 --   10000
 --
-odds = undefined
+odds :: [Nat]
+odds = one : map (add two) odds
 -- odds = [1,3..] as numbers not nats... oops
 -- this will be a infinite comprehension
