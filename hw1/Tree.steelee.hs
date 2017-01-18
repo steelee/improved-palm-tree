@@ -27,6 +27,11 @@ t2 = Node 6 (Node 2 (Leaf 1) (Node 4 (Leaf 3) (Leaf 5)))
             (Node 8 (Leaf 7) (Leaf 9))
 
 
+-- | Helper function to get value at a current node or leaf
+getVal :: Tree -> Int
+getVal (Node i _ _) = i
+getVal (Leaf l) = l
+
 -- | The integer at the left-most node of a binary tree.
 --
 --   >>> leftmost (Leaf 3)
@@ -64,7 +69,6 @@ rightmost :: Tree -> Int
 rightmost (Leaf i) = i
 rightmost (Node _ _ r) = rightmost r
 
-
 -- | Get the maximum integer from a binary tree.
 --
 --   >>> maxInt (Leaf 3)
@@ -86,7 +90,6 @@ maxInt :: Tree -> Int
 maxInt (Node n l r) = max (max n (maxInt l)) (max n (maxInt r))
 maxInt (Leaf l) = l
 
-
 -- | Get the minimum integer from a binary tree.
 --
 --   >>> minInt (Leaf 3)
@@ -107,7 +110,6 @@ maxInt (Leaf l) = l
 minInt :: Tree -> Int
 minInt (Node n l r) = min (min n (minInt l)) (min n (minInt r))
 minInt (Leaf l) = l
-
 
 -- | Get the sum of the integers in a binary tree.
 --
@@ -147,7 +149,6 @@ preorder :: Tree -> [Int]
 preorder (Node t l r) = t : (preorder l ++ preorder r)
 preorder (Leaf l) = [l]
 
-
 -- | The list of integers encountered by an in-order traversal of the tree.
 --
 --   >>> inorder (Leaf 3)
@@ -183,11 +184,6 @@ inorder (Leaf t) = [t]
 isBST :: Tree -> Bool
 isBST (Node i l r) = (i >= getVal l) && (i < getVal r) && isBST l && isBST r
 isBST (Leaf l) = True
-
-getVal :: Tree -> Int
-getVal (Node i _ _) = i
-getVal (Leaf l) = l
-
 
 -- | Check whether a number is contained in a binary search tree.
 --   (You may assume that the given tree is a binary search tree.)
