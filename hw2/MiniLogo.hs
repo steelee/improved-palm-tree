@@ -29,7 +29,7 @@ data Mode = Up
 -- just like Mode, just a different set
 data Expr = Refer Var
     | Number Int
-    | Two_Expr Expr Expr
+    | Add Expr Expr
     deriving (Show, Eq)
 
 -- cmd  ::= pen mode
@@ -67,20 +67,6 @@ line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move 
 -- Performs :
 
 
-nix = Define "nix" ["xorigin, yorigin, width, height"] [
-line (Refer "xorigin" - (Refer "width" / 2)) 
-     (Refer "yorigin" + (Refer "height" / 2)) 
-     (Refer "xorigin" + (Refer "width" / 2)) 
-     (Refer "yorigin" - (Refer "height" / 2)), 
-line (Refer "xorigin" + (Refer "width" / 2)) 
-     (Refer "yorigin" + (Refer "height" / 2)) 
-     (Refer "xorigin" - (Refer "width" / 2)) 
-     (Refer "yorigin" - (Refer "height" / 2))
-     ]
-
-
-
-
-
-
-
+nix = Define "nix" ["x_origin, y_origin, width, height"] [
+	Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
+	Call "line" [Add (Refer "x_origin") (Refer "width"), Refer "y_origin", Refer "x_origin", Add (Refer "y_origin") (Refer "height")]]
