@@ -66,8 +66,8 @@ line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move 
 -- Takes: [xorigin, yorigin, width, height]
 
 nix = Define "nix" ["x_origin, y_origin, width, height"] [
-	Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
-	Call "line" [Add (Refer "x_origin") (Refer "width"), Refer "y_origin", Refer "x_origin", Add (Refer "y_origin") (Refer "height")]]
+    Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
+    Call "line" [Add (Refer "x_origin") (Refer "width"), Refer "y_origin", Refer "x_origin", Add (Refer "y_origin") (Refer "height")]]
 
 steps :: Int -> Prog
 steps 0 = []
@@ -75,11 +75,11 @@ steps n = steps (n - 1) ++ [Call "line" [Number n, Number n, Number (n-1), Numbe
 
 -- | Gets a list of macros defined
 --
--- 	>>> macros [Define "lol" [] [], Define "foo" [] [], Pen Up, Define "bar" [] [], Call "foo" [], Call "bar" []]
--- 	["lol","foo","bar"]
+--  >>> macros [Define "lol" [] [], Define "foo" [] [], Pen Up, Define "bar" [] [], Call "foo" [], Call "bar" []]
+--  ["lol","foo","bar"]
 --
--- 	>>> macros [Call "line" [Number 1,Number 1,Number 0,Number 1],Call "line" [Number 0,Number 1,Number 0,Number 0],Call "line" [Number 2,Number 2,Number 1,Number 2],Call "line" [Number 1,Number 2,Number 1,Number 1]]
--- 	[]
+--  >>> macros [Call "line" [Number 1,Number 1,Number 0,Number 1],Call "line" [Number 0,Number 1,Number 0,Number 0],Call "line" [Number 2,Number 2,Number 1,Number 2],Call "line" [Number 1,Number 2,Number 1,Number 1]]
+--  []
 --
 
 macros :: Prog -> [Macro]
@@ -87,12 +87,22 @@ macros [] = []
 macros ((Define m _ _ ):others) = m:macros others
 macros (m:others) = macros others
 
-resolveExpr :: Expr -> String
-resolveExpr (Number n) = show n
-resolveExpr (Refer r) = r
-resolveExpr (Add x y) = resolveExpr x ++ "and" ++ resolveExpr y
+prettyVars :: [Var] -> String
+prettyVars [] = ""
+prettyVars (x:xs) = x ++ ", " ++ prettyVars xs
+
+prettyExpr :: [Expr] -> String
+prettyExpr [] = ""
+prettyExpr (Number n:xs) = show n ++ " " ++ prettyExpr xs
+prettyExpr (Refer r:xs) = r ++ " " ++ prettyExpr xs
+prettyExpr (Add x y:xs) = prettyExpr [x] ++ " and " ++ prettyExpr [y] ++ "; " ++ " " ++ prettyExpr xs
+
 
 pretty :: Prog -> String
 pretty [] = []
-pretty ((Pen Up):rest) = "pen up;" ++ pretty rest
-pretty ((Pen Down):rest) = "pen down;" ++ pretty rest
+pretty ((Pen Up):xs) = "pen up;" ++ pretty xs
+pretty ((Pen Down):xs) = "pen down; " ++ pretty xs
+pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr [ex1, ex2] ++ "); " ++ pretty xs
+pretty (Define m v p:xs) = m ++ " (" ++ prettyVars v ++ ") {" ++ pretty p ++ "}; " ++ pretty xs
+pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++ prettyExpr exs ++ "]; " ++ pretty xs
+
