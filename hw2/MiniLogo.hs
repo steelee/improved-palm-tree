@@ -64,8 +64,6 @@ line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move 
 -- we need to call 'line' macro, we'll need to call it twice for an X
 -- Structure:
 -- Takes: [xorigin, yorigin, width, height]
--- Performs :
-
 
 nix = Define "nix" ["x_origin, y_origin, width, height"] [
 	Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
@@ -84,7 +82,17 @@ steps n = steps (n - 1) ++ [Call "line" [Number n, Number n, Number (n-1), Numbe
 -- 	[]
 --
 
-macros:: Prog -> [Macro]
+macros :: Prog -> [Macro]
 macros [] = []
 macros ((Define m _ _ ):others) = m:macros others
 macros (m:others) = macros others
+
+resolveExpr :: Expr -> String
+resolveExpr (Number n) = show n
+resolveExpr (Refer r) = r
+resolveExpr (Add x y) = resolveExpr x ++ "and" ++ resolveExpr y
+
+pretty :: Prog -> String
+pretty [] = []
+pretty ((Pen Up):rest) = "pen up;" ++ pretty rest
+pretty ((Pen Down):rest) = "pen down;" ++ pretty rest
