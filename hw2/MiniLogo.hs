@@ -19,23 +19,23 @@ type Prog = [Cmd]
 
 -- mode ::= mode down | up
 data Mode = Up
-	| Down
-	deriving (Show, Eq)
+    | Down
+    deriving (Show, Eq)
 
--- expr	::=	var
---        |	num
---        |	expr + expr
+-- expr ::= var
+--        | num
+--        | expr + expr
 
 -- just like Mode, just a different set
 data Expr = Refer Var
-	| Number Int
-	| Two_Expr Expr Expr
-	deriving (Show, Eq)
+    | Number Int
+    | Two_Expr Expr Expr
+    deriving (Show, Eq)
 
--- cmd	::=	pen mode
---	|	move ( expr , expr)
---	|	define macro ( var* ) { prog }
---	|	call macro ( expr* )
+-- cmd  ::= pen mode
+--  |   move ( expr , expr)
+--  |   define macro ( var* ) { prog }
+--  |   call macro ( expr* )
 
 -- var: https://downloads.haskell.org/~ghc/7.4.1/docs/html/libraries/ghc/Var.html
 
@@ -54,6 +54,8 @@ data Cmd = Pen Mode
 -- Performs: ( lift pen, navigate to (xorigin, yorigin), drop pen, navigate to (xdest, ydest)  )
 --           ( Pen(Mode), Move (xorigin, yorigin), Pen(Mode), Move (xdest, ydest) )
 line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move (Refer "x_origin", Refer "y_origin"), Pen Down, Move (Refer "x_destination", Refer "y_destination"), Pen Up]
+-- [Pen Up, Move (Refer "x_origin", Refer "y_origin"), 
+--Pen Down, Move (Refer "x_destination", Refer "y_destination"), Pen Up]
 
 -- Use the line macro you just defined to define a new MiniLogo macro nix (x,y,w,h) 
 -- That draws a big “X” of width w and height h, starting from position (x,y).
@@ -65,4 +67,20 @@ line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move 
 -- Performs :
 
 
-nix = Define "nix" ["xorigin, yorigin, width, height"]
+nix = Define "nix" ["xorigin, yorigin, width, height"] [
+line (Refer "xorigin" - (Refer "width" / 2)) 
+     (Refer "yorigin" + (Refer "height" / 2)) 
+     (Refer "xorigin" + (Refer "width" / 2)) 
+     (Refer "yorigin" - (Refer "height" / 2)), 
+line (Refer "xorigin" + (Refer "width" / 2)) 
+     (Refer "yorigin" + (Refer "height" / 2)) 
+     (Refer "xorigin" - (Refer "width" / 2)) 
+     (Refer "yorigin" - (Refer "height" / 2))
+     ]
+
+
+
+
+
+
+
