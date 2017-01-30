@@ -68,19 +68,23 @@ line = Define "line" ["x_origin", "y_origin", "x_dest", "y_dest"] [Pen Up, Move 
 
 
 nix = Define "nix" ["x_origin, y_origin, width, height"] [
-    Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
-    Call "line" [Add (Refer "x_origin") (Refer "width"), Refer "y_origin", Refer "x_origin", Add (Refer "y_origin") (Refer "height")]]
-
+	Call "line" [Refer "x_origin", Refer "y_origin", Add (Refer "x_origin") (Refer "width"), Add (Refer "y_origin") (Refer "height")],
+	Call "line" [Add (Refer "x_origin") (Refer "width"), Refer "y_origin", Refer "x_origin", Add (Refer "y_origin") (Refer "height")]]
 
 steps :: Int -> Prog
 steps 0 = []
-steps n = steps (n-1) ++ [Call "line" [Number (n-1), Number (n-1), Number (n-1), Number n], Call "line" [Number (n-1), Number n, Number (n), Number (n)] ]
+steps n = steps (n - 1) ++ [Call "line" [Number n, Number n, Number (n-1), Number n], Call "line" [Number (n-1), Number n, Number (n-1), Number (n-1)]]
 
+-- | Gets a list of macros defined
+--
+-- 	>>> macros [Define "lol" [] [], Define "foo" [] [], Pen Up, Define "bar" [] [], Call "foo" [], Call "bar" []]
+-- 	["lol","foo","bar"]
+--
+-- 	>>> macros [Call "line" [Number 1,Number 1,Number 0,Number 1],Call "line" [Number 0,Number 1,Number 0,Number 0],Call "line" [Number 2,Number 2,Number 1,Number 2],Call "line" [Number 1,Number 2,Number 1,Number 1]]
+-- 	[]
+--
 
-
-macros :: Prog -> [Macro]
+macros:: Prog -> [Macro]
 macros [] = []
-macros (Define m _ _:xs) = m : macros xs
-macros (x:xs) = macros xs
-
-
+macros ((Define m _ _ ):others) = m:macros others
+macros (m:others) = macros others
