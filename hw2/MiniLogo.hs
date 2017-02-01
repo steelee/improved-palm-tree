@@ -87,23 +87,27 @@ macros [] = []
 macros ((Define m _ _ ):others) = m:macros others
 macros (m:others) = macros others
 
-prettyVars :: [Var] -> String
-prettyVars [] = ""
-prettyVars (x:xs) = x ++ ", " ++ prettyVars xs
+-- prettyVars :: [Var] -> String
+-- prettyVars [] = ""
+-- prettyVars (x:xs) = x ++ ", " ++ prettyVars xs
+prettyExpr :: Expr -> String
+prettyExpr (Number n) = "" ++show n
+prettyExpr (Refer r) = "" ++r
+prettyExpr (Add x y) = prettyExpr x ++ " + " ++ prettyExpr y
 
-prettyExpr :: [Expr] -> String
-prettyExpr [] = ""
-prettyExpr (Number n:xs) = show n ++ "" ++ prettyExpr xs
-prettyExpr (Refer r:xs) = r ++ " " ++ prettyExpr xs
-prettyExpr (Add x y:xs) = ""++prettyExpr [x] ++ " + " ++ prettyExpr [y] ++ ", " ++ prettyExpr xs
+-- prettyExpr :: [Expr] -> String
+-- prettyExpr [] = ""
+-- prettyExpr (Number n:xs) = " " ++show n ++ "" ++ prettyExpr xs
+-- prettyExpr (Refer r:xs) = " " ++r ++ "" ++ prettyExpr xs
+-- prettyExpr (Add x y:xs) = ""++ prettyExpr [x] ++ " +" ++ prettyExpr [y] ++ "," ++ prettyExpr xs
 
 pretty :: Prog -> String
 pretty [] = []
 pretty ((Pen Up):xs) = "Pen Up; \n" ++ pretty xs
 pretty ((Pen Down):xs) = "Pen Down; \n" ++ pretty xs
-pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr [ex1, ex2] ++ "); \n" ++ pretty xs
-pretty (Define m v p:xs) = "Define "++ m ++ " (" ++ prettyVars v ++ ") {" ++ pretty p ++ "}; \n" ++ pretty xs
-pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++ prettyExpr exs ++ "]; \n" ++ pretty xs
+pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr ex1 ++ "," ++ prettyExpr ex2 ++ "); \n" ++ pretty xs
+pretty (Define m v p:xs) = "Define "++ m ++ " (" ++ (intercalate ", " v) ++ ") {\n" ++ pretty p ++ "}; \n" ++ pretty xs
+pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++  intercalate ", " (map prettyExpr exs)  ++ "]; \n" ++ pretty xs
 
 optE :: Expr -> Expr
 optE (Add (Number l) (Number r)) = Number $ l + r
