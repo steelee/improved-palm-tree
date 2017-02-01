@@ -93,17 +93,17 @@ prettyVars (x:xs) = x ++ ", " ++ prettyVars xs
 
 prettyExpr :: [Expr] -> String
 prettyExpr [] = ""
-prettyExpr (Number n:xs) = show n ++ " " ++ prettyExpr xs
+prettyExpr (Number n:xs) = show n ++ "" ++ prettyExpr xs
 prettyExpr (Refer r:xs) = r ++ " " ++ prettyExpr xs
-prettyExpr (Add x y:xs) = prettyExpr [x] ++ " and " ++ prettyExpr [y] ++ "; " ++ " " ++ prettyExpr xs
+prettyExpr (Add x y:xs) = ""++prettyExpr [x] ++ " + " ++ prettyExpr [y] ++ ", " ++ prettyExpr xs
 
 pretty :: Prog -> String
 pretty [] = []
-pretty ((Pen Up):xs) = "pen up;" ++ pretty xs
-pretty ((Pen Down):xs) = "pen down; " ++ pretty xs
-pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr [ex1, ex2] ++ "); " ++ pretty xs
-pretty (Define m v p:xs) = m ++ " (" ++ prettyVars v ++ ") {" ++ pretty p ++ "}; " ++ pretty xs
-pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++ prettyExpr exs ++ "]; " ++ pretty xs
+pretty ((Pen Up):xs) = "Pen Up; \n" ++ pretty xs
+pretty ((Pen Down):xs) = "Pen Down; \n" ++ pretty xs
+pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr [ex1, ex2] ++ "); \n" ++ pretty xs
+pretty (Define m v p:xs) = "Define "++ m ++ " (" ++ prettyVars v ++ ") {" ++ pretty p ++ "}; \n" ++ pretty xs
+pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++ prettyExpr exs ++ "]; \n" ++ pretty xs
 
 optE :: Expr -> Expr
 optE (Add (Number l) (Number r)) = Number $ l + r
