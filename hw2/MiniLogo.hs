@@ -97,6 +97,8 @@ prettyExpr (Number n:xs) = show n ++ " " ++ prettyExpr xs
 prettyExpr (Refer r:xs) = r ++ " " ++ prettyExpr xs
 prettyExpr (Add x y:xs) = prettyExpr [x] ++ " and " ++ prettyExpr [y] ++ "; " ++ " " ++ prettyExpr xs
 
+pretty :: Prog -> String
+pretty [] = []
 pretty ((Pen Up):xs) = "pen up;" ++ pretty xs
 pretty ((Pen Down):xs) = "pen down; " ++ pretty xs
 pretty (Move (ex1, ex2):xs) = "Move (" ++ prettyExpr [ex1, ex2] ++ "); " ++ pretty xs
@@ -105,4 +107,9 @@ pretty (Call m exs:xs) = "Macro: " ++ m ++ " [" ++ prettyExpr exs ++ "]; " ++ pr
 
 optE :: Expr -> Expr
 optE (Add (Number l) (Number r)) = Number $ l + r
-optE otherwise = otherwise
+optE x = x
+
+optP :: Prog -> Prog
+optP [] = [] 
+optP ((Move (ex1,ex2)):xs) = (Move (optE ex1, optE ex2)) : optP xs
+optP ((Call m e):xs) = (Call m (map optE e)) : optP xs
