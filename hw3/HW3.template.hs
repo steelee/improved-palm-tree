@@ -65,7 +65,11 @@ cmd (Move i j) (Down, p) = ((Down, (i,j)), Just (p, (i,j)))
 prog :: Prog -> State -> (State, [Line])
 prog [] s = (s, [])
 -- we need a case structure to deal with these movements
-prog (l:ls) s = 
+prog (c:cs) st = case cmd c st of
+	-- lambda function: pull the list of commands apart
+	(s, Just l) -> (\(st,cs) -> (st,l:cs)) $ prog cs s
+
+        (s, _) -> prog cs s
 
 
 --
@@ -75,4 +79,5 @@ prog (l:ls) s =
 -- | This should be a MiniMiniLogo program that draws an amazing picture.
 --   Add as many helper functions as you want.
 amazing :: Prog
-amazing = undefined
+amazing = undefined 
+
