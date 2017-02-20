@@ -9,7 +9,7 @@ import KarelState
 
 -- | Valuation function for Test.
 test :: Test -> World -> Robot -> Bool
-test (Not t) w r     = neg (test t w r)
+test (Not t) w r     = negate (test t w r)
 test (Facing c) w r  = (getFacing r) == c 
 test (Clear d) w r   = isClear (relativePos d r) w
 test (Beeper) w r    = hasBeeper (getPos r) w
@@ -26,7 +26,7 @@ stmt PutBeeper _ w r = let p = getPos r
                         in if (getBag r) > 0
                               then OK (incBeeper p w) (decBag r)
                               else Error ("No beeper to place: " ++ show p)	
-stmt Move _ w r      = let p = relativePos d r
+stmt Move _ w r      = let p = neighbor (getFacing r) (getPos r)
                         in if isClear p w
 			      then OK (setPos p r)
 			      else Error ("Blocked at: " ++ show p)	
