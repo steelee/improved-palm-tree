@@ -9,7 +9,7 @@ import KarelState
 
 -- | Valuation function for Test.
 test :: Test -> World -> Robot -> Bool
-test (Not t) w r     = negate (test t w r)
+test (Not t) w r     = test t w r)
 test (Facing c) w r  = (getFacing r) == c 
 test (Clear d) w r   = isClear (relativePos d r) w
 test (Beeper) w r    = hasBeeper (getPos r) w
@@ -31,7 +31,9 @@ stmt Move _ w r      = let p = neighbor (getFacing r) (getPos r)
 			      then OK w (setPos p r)
 			      else Error ("Blocked at: " ++ show p)	
 stmt (Turn d) _ w r      = OK w (setFacing (cardTurn d (getFacing r) ) r)			      	
-stmt _ _ _ _ = undefined
+stmt (Block (s:xs)) d w r = case stmt s d w r of
+			OK r' w' -> stmt (Block xs) d w' r'  
+		        Error E  -> Error E
     
 -- | Run a Karel program.
 prog :: Prog -> World -> Robot -> Result
