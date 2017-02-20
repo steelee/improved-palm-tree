@@ -24,13 +24,13 @@ stmt PickBeeper _ w r = let p = getPos r
                               else Error ("No beeper to pick at: " ++ show p)
 stmt PutBeeper _ w r = let p = getPos r
                         in if (getBag r) > 0
-                              then OK (incBeeper p w) (decBag r)
+                              then OK (incBeeper p w) (decBag r) 
                               else Error ("No beeper to place: " ++ show p)	
 stmt Move _ w r      = let p = neighbor (getFacing r) (getPos r)
                         in if isClear p w
-			      then OK (setPos p r)
+			      then OK w (setPos p r)
 			      else Error ("Blocked at: " ++ show p)	
-stmt (Turn d) _ _ r      = OK (setFacing (cardTurn d (getFacing r) ) r)			      	
+stmt (Turn d) _ w r      = OK w (setFacing (cardTurn d (getFacing r) ) r)			      	
 stmt _ _ _ _ = undefined
     
 -- | Run a Karel program.
