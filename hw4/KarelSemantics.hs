@@ -34,14 +34,19 @@ stmt (Turn d) _ w r      = OK w (setFacing (cardTurn d (getFacing r) ) r)
 stmt (Block []) _ w r = OK w r
 
 stmt (Block (s:xs)) d w r = case stmt s d w r of
-			OK r' w' -> stmt (Block xs) d w' r'  
-		        Error E  -> Error E
+			OK w' r' -> stmt (Block xs) d w' r'  
+		        Error e  -> Error e
 -- If Test Stmt Stmt
 stmt (If c t e) d w r = if (test c w r) 
 			then stmt t d w r
 			else stmt e d w r
-    
+   
+stmt (Call m) d w r = case (lookup m d) of
+                        Just s -> stmt s d w r
+                        Nothing -> Error ("Undefined macro: " ++ m)
+
 stmt _ _ _ _ = Error "not def"
+
 -- | Run a Karel program.
 prog :: Prog -> World -> Robot -> Result
 prog (m,s) w r = stmt s m w r
