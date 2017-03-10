@@ -50,7 +50,6 @@ parent(marge,maggie).
 parent(selma,ling).
 
 
-
 %%
 % Part 1. Family relations
 %%
@@ -92,8 +91,23 @@ ancestor(X,Y) :- parent(X,Y).
 ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 
 % Extra credit: Define the predicate `related/2`.
-%level(X,Y) :- level((siblingInLaw(sibling(X,S),T), X \= T),Y).
-
+related(X,Z) :- related_(X,Y), related_(Y,Z).
+related_(X,Y) :- ancestor(X,Y).
+related_(X,Y) :- ancestor(X,Y).
+related_(X,Y) :- married(X,Y).
+related_(X,Y) :- married(Y,X).
+related_(X,Y) :- child(Y,X).
+related_(X,Y) :- child(X,Y).
+related_(X,Y) :- aunt(X,Y).
+related_(X,Y) :- aunt(Y,X).
+related_(X,Y) :- uncle(X,Y).
+related_(X,Y) :- uncle(Y,X).
+related_(X,Y) :- cousin(X,Y).
+related_(X,Y) :- cousin(Y,X).
+related_(X,Y) :- siblingInLaw(X,Y).
+related_(X,Y) :- siblingInLaw(Y,X).
+related_(X,Y) :- sibling(X,Y).
+related_(X,Y) :- sibling(Y,X).
 
 %%
 % Part 2. Language implementation
@@ -104,13 +118,6 @@ ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 
 % 1. Define the predicate `cmd/3`, which describes the effect of executing a
 %    command on the stack.
-cmd(if(P2,_), [H|T], S2)  :- prog(P2,T,S2)
-cmd(if(_,P1), [H|T], S2)  :- prog(P1,T,S2)
-cmd(add, [N1|[N2|T]], S2) :- X is N1+N2, S2 = [X | T].
-cmd(lte, [N1|[N2|T]], S2) :- X = (N1=<N2 -> Res=t;Res=f), call(X),  S2 = [Res | T].
-
-cmd(C,S1,S2)              :- S2 = [C|S1].
-
 cmd(if(_,P1), [f|T], S2) :- prog(P1,T,S2).
 cmd(if(P2,_), [t|T], S2) :- prog(P2,T,S2).
 cmd(lte, [H1 | [H2|T]], S2) :- X = (H1=<H2 -> Res=t;Res=f), call(X), S2 = [Res|T]. 
