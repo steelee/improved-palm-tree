@@ -93,14 +93,23 @@ ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 % Part 2. Language implementation
 %%
 
+% List notes:
+% [H|T] is a list, H is the head, and T is the tail.
+
 % 1. Define the predicate `cmd/3`, which describes the effect of executing a
 %    command on the stack.
 
+cmd(if(_,P1), [f|T], S2) :- prog(P1,T,S2).
+cmd(if(P2,_), [t|T], S2) :- prog(P2,T,S2).
+cmd(lte, [H1 | [H2|T]], S2) :- X = (H1=<H2 -> Res=t;Res=f), call(X), S2 = [Res|T]. 
+cmd(add, [H1 | [H2|T]], S2) :- X is H1 + H2, S2 = [X|T].
+cmd(C,S1,S2) :- S2 = [C|S1].
 
 % 2. Define the predicate `prog/3`, which describes the effect of executing a
 %    program on the stack.
 
-
+prog([], S1, S2) :- S1 = S2.
+prog([H|T], S1, S2) :- cmd(H, S1, Total) , prog(T, Total, S2).
 
 
 %------------------------------------
