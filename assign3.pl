@@ -1,3 +1,9 @@
+%   CS 381
+%   Will Olsen
+%   Evan Steele
+%   Stefan Reindel
+%   Homework 5, Prolog
+%   
 % Here are a bunch of facts describing the Simpson's family tree.
 % Don't change them!
 
@@ -95,37 +101,21 @@ ancestor(X,Y) :- parent(Z,Y), ancestor(X,Z).
 
 % 1. Define the predicate `cmd/3`, which describes the effect of executing a
 %    command on the stack.
+cmd(if(P2,_), [H|T], S2)  :- prog(P2,T,S2)
+cmd(if(_,P1), [H|T], S2)  :- prog(P1,T,S2)
+cmd(add, [N1|[N2|T]], S2) :- X is N1+N2, S2 = [X | T].
+cmd(lte, [N1|[N2|T]], S2) :- X = (N1=<N2 -> Res=t;Res=f), call(X),  S2 = [Res | T].
+
+cmd(C,S1,S2)              :- S2 = [C|S1].
 
 
 % 2. Define the predicate `prog/3`, which describes the effect of executing a
 %    program on the stack.
 
-
-
+prog([],S1,S2)    :- S2. 
+prog([H|T],S1,S2) :- cmd(H, S1, Ttl), prog(T,Ttl,S2)
 
 %------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
